@@ -72,12 +72,14 @@
                 const formData = new FormData();
                 formData.append('schemFile', file);
 
-				fetch('https://168.138.134.26:3000/convert', {
-				  method: 'POST',
-				  body: formData
-				})
+                const response = await fetch('http://168.138.134.26:3000/convert', {
+                    method: 'POST',
+                    body: formData
+                });
 
-                if (!response.ok) throw new Error(await response.text());
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
 
                 const blob = await response.blob();
                 const url = window.URL.createObjectURL(blob);
@@ -96,8 +98,8 @@
                 }, 100);
                 
             } catch (err) {
-                statusDiv.innerHTML = `<p style="color:red;">❌ Erro na conversão: ${err.message}</p>`;
-                console.error(err);
+                console.error('Erro detalhado:', err);
+                statusDiv.innerHTML = `<p style="color:red;">❌ Erro na conversão: ${err.message || 'Erro desconhecido'}</p>`;
             }
         }
     </script>
