@@ -8,8 +8,19 @@
         #drop-area { border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0; }
         #drop-area.highlight { border-color: purple; }
         #file-input { display: none; }
-        button { background: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; }
-        #status { margin-top: 20px; }
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #45a049; }
+        #status { margin-top: 20px; min-height: 50px; }
+        .error { color: #d32f2f; }
+        .success { color: #388e3c; }
     </style>
 </head>
 <body>
@@ -28,6 +39,9 @@
         const fileInput = document.getElementById('file-input');
         const statusDiv = document.getElementById('status');
 
+        // Configurações
+        const API_URL = 'https://cors-anywhere.herokuapp.com/http://168.138.134.26:3000/convert';
+        
         // Eventos de drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
@@ -61,46 +75,57 @@
 
         async function handleFiles(e) {
             const file = e.target.files[0];
+            if (!file) return;
+            
             if (!file.name.endsWith('.schem')) {
-                statusDiv.innerHTML = '<p style="color:red;">❌ Por favor, selecione um arquivo .schem</p>';
+                showStatus('❌ Por favor, selecione um arquivo .schem', 'error');
                 return;
             }
 
-            statusDiv.innerHTML = '<p>⏳ Convertendo arquivo... (isso pode demorar para arquivos grandes)</p>';
+            showStatus('⏳ Convertendo arquivo... (isso pode demorar para arquivos grandes)');
             
             try {
                 const formData = new FormData();
                 formData.append('schemFile', file);
 
-                const response = await fetch('http://168.138.134.26:3000/convert', {
+                const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: formData
+                    body: formData,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
                 });
 
                 if (!response.ok) {
-                    throw new Error(await response.text());
+                    throw new Error(await response.text() || 'Erro no servidor');
                 }
 
                 const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
+                downloadFile(blob, file.name.replace('.schem', '.schematic'));
                 
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = file.name.replace('.schem', '.schematic');
-                document.body.appendChild(a);
-                a.click();
-                
-                statusDiv.innerHTML = '<p style="color:green;">✅ Conversão concluída! Download iniciado.</p>';
-                
-                setTimeout(() => {
-                    window.URL.revokeObjectURL(url);
-                    document.body.removeChild(a);
-                }, 100);
+                showStatus('✅ Conversão concluída! Download iniciado.', 'success');
                 
             } catch (err) {
                 console.error('Erro detalhado:', err);
-                statusDiv.innerHTML = `<p style="color:red;">❌ Erro na conversão: ${err.message || 'Erro desconhecido'}</p>`;
+                showStatus(`❌ Erro na conversão: ${err.message || 'Servidor indisponível'}`, 'error');
             }
+        }
+
+        function downloadFile(blob, filename) {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            }, 100);
+        }
+
+        function showStatus(message, type = '') {
+            statusDiv.innerHTML = `<p class="${type}">${message}</p>`;
         }
     </script>
 </body>
