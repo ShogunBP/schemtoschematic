@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Conversor .schem → .schematic</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
+        #drop-area { border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0; }
+        #drop-area.highlight { border-color: purple; }
+        #file-input { display: none; }
+        button { background: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; }
+        #status { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Conversor .schem → .schematic</h1>
+    
+    <div id="drop-area">
+        <p>Arraste seu arquivo .schem aqui ou clique para selecionar</p>
+        <input type="file" id="file-input" accept=".schem">
+        <button onclick="document.getElementById('file-input').click()">Selecionar Arquivo</button>
+    </div>
+    
+    <div id="status"></div>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const fileInput = document.getElementById('file-input');
+        const statusDiv = document.getElementById('status');
+
+        // Eventos de drag and drop
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight() { dropArea.classList.add('highlight'); }
+        function unhighlight() { dropArea.classList.remove('highlight'); }
+
+        // Processar arquivo
+        dropArea.addEventListener('drop', handleDrop, false);
+        fileInput.addEventListener('change', handleFiles, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles({ target: { files } });
+        }
+
+        async function handleFiles(e) {
+            const file = e.target.files[0];
+            if (!file.name.endsWith('.schem')) {
+                statusDiv.innerHTML = '<p style="color:red;">❌ Por favor, selecione um arquivo .schem</p>';
+                return;
+            }
+
+            statusDiv.innerHTML = '<p>⏳ Convertendo arquivo... (isso pode demorar para arquivos grandes)</p>';
+            
+            try {
+                const formData = new FormData();
+                formData.append('schemFile', file);
+
+				fetch('https://168.138.134.26:3000/convert', {
+				  method: 'POST',
+				  body: formData,
+				  headers: {
+					'Authorization': 'Basic ' + btoa('admin:senhaSegura123')
+				  }
+				})
+
+                if (!response.ok) throw new Error(await response.text());
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.name.replace('.schem', '.schematic');
+                document.body.appendChild(a);
+                a.click();
+                
+                statusDiv.innerHTML = '<p style="color:green;">✅ Conversão concluída! Download iniciado.</p>';
+                
+                setTimeout(() => {
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                }, 100);
+                
+            } catch (err) {
+                statusDiv.innerHTML = `<p style="color:red;">❌ Erro na conversão: ${err.message}</p>`;
+                console.error(err);
+            }
+        }
+    </script>
+</body>
+</html>
