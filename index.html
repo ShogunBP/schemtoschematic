@@ -39,10 +39,8 @@
         const fileInput = document.getElementById('file-input');
         const statusDiv = document.getElementById('status');
 
-        // Configurações
         const API_URL = 'https://cors-anywhere.herokuapp.com/http://168.138.134.26:3000/convert';
         
-        // Eventos de drag and drop
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
             dropArea.addEventListener(eventName, preventDefaults, false);
         });
@@ -63,7 +61,6 @@
         function highlight() { dropArea.classList.add('highlight'); }
         function unhighlight() { dropArea.classList.remove('highlight'); }
 
-        // Processar arquivo
         dropArea.addEventListener('drop', handleDrop, false);
         fileInput.addEventListener('change', handleFiles, false);
 
@@ -90,11 +87,7 @@
 
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    body: formData,
-                    headers: {
-						'Authorization': 'Basic ' + btoa('sgbp:aGbYgSID89wBBi74KI'),
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    body: formData
                 });
 
                 if (!response.ok) {
