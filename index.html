@@ -74,10 +74,7 @@
 
 				fetch('https://168.138.134.26:3000/convert', {
 				  method: 'POST',
-				  body: formData,
-				  headers: {
-					'Authorization': 'Basic ' + btoa('admin:senhaSegura123')
-				  }
+				  body: formData
 				})
 
                 if (!response.ok) throw new Error(await response.text());
