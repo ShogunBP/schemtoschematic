@@ -1,126 +1,28 @@
+
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Conversor .schem → .schematic</title>
-    <style>
-        body { font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; }
-        #drop-area { border: 2px dashed #ccc; padding: 20px; text-align: center; margin: 20px 0; }
-        #drop-area.highlight { border-color: purple; }
-        #file-input { display: none; }
-        button { 
-            background: #4CAF50; 
-            color: white; 
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover { background: #45a049; }
-        #status { margin-top: 20px; min-height: 50px; }
-        .error { color: #d32f2f; }
-        .success { color: #388e3c; }
-    </style>
-</head>
-<body>
-    <h1>Conversor .schem → .schematic</h1>
-    
-    <div id="drop-area">
-        <p>Arraste seu arquivo .schem aqui ou clique para selecionar</p>
-        <input type="file" id="file-input" accept=".schem">
-        <button onclick="document.getElementById('file-input').click()">Selecionar Arquivo</button>
-    </div>
-    
-    <div id="status"></div>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Schematic Converter - Convert .schem to .schematic files</title>
+    <meta name="description" content="Convert WorldEdit 1.13+ .schem files to legacy 1.12- .schematic files. Easy-to-use Minecraft schematic converter." />
+    <meta name="author" content="ShogunBP" />
 
-    <script>
-        const dropArea = document.getElementById('drop-area');
-        const fileInput = document.getElementById('file-input');
-        const statusDiv = document.getElementById('status');
+    <meta property="og:title" content="Schematic Converter - Convert .schem to .schematic files" />
+    <meta property="og:description" content="Convert WorldEdit 1.13+ .schem files to legacy 1.12- .schematic files" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://i.imgur.com/7JtmC2q.jpeg" />
 
-        const API_URL = 'https://cors-anywhere.herokuapp.com/http://168.138.134.26:3000/convert';
-        
-        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, preventDefaults, false);
-        });
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@dev_ShogunBP" />
+    <meta name="twitter:image" content="https://i.imgur.com/7JtmC2q.jpeg" />
+    <script type="module" crossorigin src="/assets/index-pKPCM67w.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-Bw-TAJvA.css">
+  </head>
 
-        function preventDefaults(e) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropArea.addEventListener(eventName, highlight, false);
-        });
-
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropArea.addEventListener(eventName, unhighlight, false);
-        });
-
-        function highlight() { dropArea.classList.add('highlight'); }
-        function unhighlight() { dropArea.classList.remove('highlight'); }
-
-        dropArea.addEventListener('drop', handleDrop, false);
-        fileInput.addEventListener('change', handleFiles, false);
-
-        function handleDrop(e) {
-            const dt = e.dataTransfer;
-            const files = dt.files;
-            handleFiles({ target: { files } });
-        }
-
-        async function handleFiles(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            if (!file.name.endsWith('.schem')) {
-                showStatus('❌ Por favor, selecione um arquivo .schem', 'error');
-                return;
-            }
-
-            showStatus('⏳ Convertendo arquivo... (isso pode demorar para arquivos grandes)');
-            
-            try {
-                const formData = new FormData();
-                formData.append('schemFile', file);
-
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error(await response.text() || 'Erro no servidor');
-                }
-
-                const blob = await response.blob();
-                downloadFile(blob, file.name.replace('.schem', '.schematic'));
-                
-                showStatus('✅ Conversão concluída! Download iniciado.', 'success');
-                
-            } catch (err) {
-                console.error('Erro detalhado:', err);
-                showStatus(`❌ Erro na conversão: ${err.message || 'Servidor indisponível'}`, 'error');
-            }
-        }
-
-        function downloadFile(blob, filename) {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            }, 100);
-        }
-
-        function showStatus(message, type = '') {
-            statusDiv.innerHTML = `<p class="${type}">${message}</p>`;
-        }
-    </script>
-</body>
+  <body>
+    <div id="root"></div>
+    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+  </body>
 </html>
