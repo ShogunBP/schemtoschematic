@@ -63,3 +63,4 @@ services:
 networks:
   schem-network:
     driver: bridge
+    name: schem-network
