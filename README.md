@@ -82,10 +82,19 @@ Para configuração completa, veja a seção de variáveis de ambiente no `bluep
 
 ### Método 1: Deploy via Script (Recomendado)
 
-1. **Clone do repositório**:
+1. **Preparar estrutura na VM**:
    ```bash
-   git clone <repo-url>
-   cd schem-to-schematic
+   # Entrar em /srv
+   cd /srv
+   
+   # Criar pasta projects (se não existir)
+   sudo mkdir -p projects
+   sudo chown -R $USER:$USER projects
+   
+   # Entrar e clonar
+   cd projects
+   git clone https://github.com/ShogunBP/schemtoschematic.git
+   cd schemtoschematic
    ```
 
 2. **Configurar variáveis de ambiente**:
@@ -98,10 +107,15 @@ Para configuração completa, veja a seção de variáveis de ambiente no `bluep
    ```env
    NODE_ENV=production
    PORT=3002
-   FRONTEND_URL=http://seu-dominio.com:8081
+   FRONTEND_URL=http://168.138.134.26:8081
    VITE_API_URL=/convert
    SECRET_KEY=sua-chave-secreta-muito-forte
-   PROJECT_DATA_DIR=/caminho/para/dados  # Opcional
+   PROJECT_DATA_DIR=/srv/projects/schemtoschematic/data
+   ```
+   
+   **Criar diretórios necessários:**
+   ```bash
+   mkdir -p data/api/uploads data/api/logs data/api/logs/nginx
    ```
 
 3. **Executar deploy**:

@@ -24,10 +24,10 @@ services:
       - FRONTEND_URL=${FRONTEND_URL}
     volumes:
       # Persistir uploads temporários (se necessário)
-      # Ajuste o path conforme sua estrutura de diretórios
-      - ${PROJECT_DATA_DIR:-./data}/api/uploads:/app/uploads
+      # Padrão: /srv/projects/schem-to-schematic/data/api/uploads
+      - /srv/projects/schemtoschematic/data/api/uploads:/app/uploads
       # Logs do backend
-      - ${PROJECT_DATA_DIR:-./data}/api/logs:/app/logs
+      - /srv/projects/schemtoschematic/data/api/logs:/app/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
       interval: 30s
@@ -55,8 +55,7 @@ services:
       - "8081:80"
     volumes:
       # Logs do frontend (nginx)
-      # Ajuste o path conforme sua estrutura de diretórios
-      - ${PROJECT_DATA_DIR:-./data}/api/logs/nginx:/var/log/nginx
+      - /srv/projects/schemtoschematic/data/api/logs/nginx:/var/log/nginx
     depends_on:
       - schem-api
     networks:

@@ -1,8 +1,9 @@
 # Dependências
 node_modules/
 */node_modules/
-package-lock.json
-*/package-lock.json
+# package-lock.json é necessário para Docker builds, então NÃO ignorar
+# package-lock.json
+# */package-lock.json
 bun.lockb
 
 # Variáveis de ambiente
@@ -64,6 +65,7 @@ coverage/
 *.pid.lock
 
 # Documentação Markdown (exceto README e blueprint)
+# VM_SETUP.md fica apenas local (contém informações específicas da VM, não deve ir para Git público)
 *.md
 !README.md
 !blueprint.md

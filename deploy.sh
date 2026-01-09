@@ -30,10 +30,15 @@ echo "🚀 Iniciando deploy..."
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 # Configuração do projeto - ajuste conforme sua estrutura
+# Padrão: assume que está no diretório do projeto
 PROJECT_DIR="${PROJECT_DIR:-$(pwd)}"
 COMPOSE_FILE="docker-compose.yml"
 PROJECT_NAME="schem-to-schematic"
 LAST_DEPLOY_FILE="${PROJECT_DIR}/.last-deploy-commit"
+
+# Diretório padrão para dados (ajuste se necessário)
+# Em produção na VM: /srv/projects/schem-to-schematic/data
+DATA_DIR="${PROJECT_DATA_DIR:-${PROJECT_DIR}/data}"
 
 if [ ! -f "$COMPOSE_FILE" ]; then
     echo "❌ Erro: docker-compose.yml não encontrado"
@@ -153,14 +158,17 @@ docker rm -f schem-api schem-frontend 2>/dev/null || true
 # 7. Criar diretórios necessários
 echo ""
 echo "📁 Verificando volumes..."
-# Ajuste os paths conforme necessário - usando paths relativos por padrão
-DATA_DIR="${PROJECT_DATA_DIR:-${PROJECT_DIR}/data}"
 mkdir -p "${DATA_DIR}/api/uploads" "${DATA_DIR}/api/logs" "${DATA_DIR}/api/logs/nginx" || true
+echo "   Diretórios de dados: ${DATA_DIR}"
 
 # 8. Limpar logs antigos (evita crescimento infinito)
 echo ""
 echo "📋 Limpando logs antigos (>30 dias)..."
-find "${DATA_DIR}/api/logs" -type f -name "*.log" -mtime +30 -delete 2>/dev/null || true
+if [ -d "${DATA_DIR}/api/logs" ]; then
+    find "${DATA_DIR}/api/logs" -type f -name "*.log" -mtime +30 -delete 2>/dev/null || true
+else
+    echo "   Diretório de logs ainda não existe (será criado)"
+fi
 
 # 9. Recriar containers (sem rebuild, já foi feito antes)
 echo ""
