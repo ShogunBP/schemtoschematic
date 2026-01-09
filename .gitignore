@@ -1,0 +1,69 @@
+# Dependências
+node_modules/
+*/node_modules/
+package-lock.json
+*/package-lock.json
+bun.lockb
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.production
+.env.*.local
+api/.env
+api/.env.local
+api/.env.production
+# Mas permite .env.example
+!.env.example
+!api/.env.example
+
+# Arquivos temporários
+temp_*.schem
+api/temp_*.schem
+api/uploads/*
+!api/uploads/.gitkeep
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Build outputs
+dist/
+build/
+dist-ssr
+
+# Sistema operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Testes
+coverage/
+.nyc_output/
+
+# Docker
+*.pid
+*.seed
+*.pid.lock
+
+# Documentação Markdown (exceto README e blueprint)
+*.md
+!README.md
+!blueprint.md

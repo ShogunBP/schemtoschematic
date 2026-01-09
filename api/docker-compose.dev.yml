@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  schem-converter-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: schem-converter-dev
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - SECRET_KEY=${SECRET_KEY}
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    working_dir: /app
+    networks:
+      - schem-network-dev
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  schem-network-dev:
+    driver: bridge
