@@ -24,7 +24,7 @@ services:
       - FRONTEND_URL=${FRONTEND_URL}
     volumes:
       # Persistir uploads temporários (se necessário)
-      # Padrão: /srv/projects/schem-to-schematic/data/api/uploads
+      # Caminho absoluto para evitar problemas no Portainer
       - /srv/projects/schemtoschematic/data/api/uploads:/app/uploads
       # Logs do backend
       - /srv/projects/schemtoschematic/data/api/logs:/app/logs
@@ -55,6 +55,7 @@ services:
       - "8081:80"
     volumes:
       # Logs do frontend (nginx)
+      # Caminho absoluto para evitar problemas no Portainer
       - /srv/projects/schemtoschematic/data/api/logs/nginx:/var/log/nginx
     depends_on:
       - schem-api
