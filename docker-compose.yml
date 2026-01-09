@@ -9,6 +9,9 @@ services:
         - BUILD_VERSION=${BUILD_VERSION}
     container_name: schem-api
     restart: unless-stopped
+    labels:
+      - "com.docker.compose.project=schem-to-schematic"
+      - "com.docker.compose.service=schem-api"
     tty: true
     stdin_open: true
     ports:
@@ -41,6 +44,9 @@ services:
         - BUILD_VERSION=${BUILD_VERSION}
     container_name: schem-frontend
     restart: unless-stopped
+    labels:
+      - "com.docker.compose.project=schem-to-schematic"
+      - "com.docker.compose.service=schem-frontend"
     ports:
       - "8081:80"
     depends_on:
